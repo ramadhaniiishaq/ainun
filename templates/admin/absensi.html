@@ -1,0 +1,231 @@
+{% extends "admin/base_admin.html" %}
+
+{% block title %}Input Absensi - SiswaHadir{% endblock %}
+
+{% block page_title %}Input Absensi Siswa{% endblock %}
+
+{% block content %}
+<!-- Filter Card -->
+<div class="content-card" data-aos="fade-down">
+    <div class="card-header">
+        <h5 class="card-title">
+            <i class="bi bi-funnel"></i>
+            Filter Data
+        </h5>
+    </div>
+    <form method="GET" class="row g-3">
+        <div class="col-md-4">
+            <label class="form-label fw-semibold">Tanggal Absensi</label>
+            <div class="input-wrapper">
+                <i class="bi bi-calendar" style="position: absolute; left: 1rem; top: 50%; transform: translateY(-50%); color: var(--primary);"></i>
+                <input type="date" name="tanggal" class="form-control-modern" style="padding-left: 3rem;" value="{{ tanggal }}">
+            </div>
+        </div>
+        <div class="col-md-4">
+            <label class="form-label fw-semibold">Filter Kelas</label>
+            <select name="id_kelas" class="form-select-modern">
+                <option value="">Semua Kelas</option>
+                {% for k in kelas %}
+                <option value="{{ k.id_kelas }}" {% if id_kelas == k.id_kelas|string %}selected{% endif %}>
+                    {{ k.nama_kelas }}
+                </option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="col-md-4 d-flex align-items-end">
+            <button type="submit" class="btn-modern-primary w-100">
+                <i class="bi bi-search"></i>
+                Tampilkan Data
+            </button>
+        </div>
+    </form>
+</div>
+
+<!-- Form Absensi -->
+<div class="content-card" data-aos="fade-up">
+    <div class="card-header">
+        <h5 class="card-title">
+            <i class="bi bi-calendar-check"></i>
+            Form Absensi - {{ tanggal|replace('-', '/') }}
+        </h5>
+        <span class="badge-modern" style="background: var(--gradient-1); color: white;">
+            <i class="bi bi-people"></i> {{ siswa|length }} Siswa
+        </span>
+    </div>
+
+    <form action="{{ url_for('simpan_absensi') }}" method="POST" id="formAbsensi">
+        <input type="hidden" name="tanggal" value="{{ tanggal }}">
+        
+        <div class="table-responsive">
+            <table class="table-modern">
+                <thead>
+                    <tr>
+                        <th style="width: 5%">No</th>
+                        <th style="width: 10%">NIS</th>
+                        <th style="width: 20%">Nama Siswa</th>
+                        <th style="width: 10%">Kelas</th>
+                        <th style="width: 35%">Status Absensi</th>
+                        <th style="width: 20%">Keterangan</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for s in siswa %}
+                    <tr>
+                        <td>{{ loop.index }}</td>
+                        <td><span class="fw-bold" style="color: var(--primary);">{{ s.nis }}</span></td>
+                        <td>
+                            <div class="d-flex align-items-center gap-2">
+                                <div class="user-avatar" style="width: 30px; height: 30px; font-size: 0.8rem;">
+                                    {{ s.nama[0] }}
+                                </div>
+                                {{ s.nama }}
+                            </div>
+                        </td>
+                        <td>
+                            <span class="badge-modern" style="background: rgba(110, 140, 251, 0.15); color: var(--primary);">
+                                {{ s.nama_kelas or '-' }}
+                            </span>
+                        </td>
+                        <td>
+                            <div class="d-flex gap-2 flex-wrap">
+                                <label class="status-option">
+                                    <input type="radio" name="status_{{ s.id_siswa }}" value="hadir" {% if s.status == 'hadir' %}checked{% endif %} required>
+                                    <span class="status-label status-hadir">
+                                        <i class="bi bi-check-circle"></i> Hadir
+                                    </span>
+                                </label>
+                                <label class="status-option">
+                                    <input type="radio" name="status_{{ s.id_siswa }}" value="sakit" {% if s.status == 'sakit' %}checked{% endif %}>
+                                    <span class="status-label status-sakit">
+                                        <i class="bi bi-thermometer"></i> Sakit
+                                    </span>
+                                </label>
+                                <label class="status-option">
+                                    <input type="radio" name="status_{{ s.id_siswa }}" value="izin" {% if s.status == 'izin' %}checked{% endif %}>
+                                    <span class="status-label status-izin">
+                                        <i class="bi bi-envelope"></i> Izin
+                                    </span>
+                                </label>
+                                <label class="status-option">
+                                    <input type="radio" name="status_{{ s.id_siswa }}" value="alfa" {% if s.status == 'alfa' %}checked{% endif %}>
+                                    <span class="status-label status-alfa">
+                                        <i class="bi bi-x-circle"></i> Alfa
+                                    </span>
+                                </label>
+                            </div>
+                        </td>
+                        <td>
+                            <input type="text" class="form-control-modern" name="keterangan_{{ s.id_siswa }}" 
+                                   placeholder="Keterangan" value="{{ s.keterangan or '' }}">
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="d-flex justify-content-end gap-3 mt-4">
+            <button type="button" class="btn-modern-danger" onclick="resetForm()">
+                <i class="bi bi-arrow-counterclockwise"></i>
+                Reset
+            </button>
+            <button type="submit" class="btn-modern-primary">
+                <i class="bi bi-save"></i>
+                Simpan Absensi
+            </button>
+        </div>
+    </form>
+</div>
+
+<style>
+    .status-option {
+        cursor: pointer;
+        margin: 0;
+    }
+
+    .status-option input[type="radio"] {
+        display: none;
+    }
+
+    .status-label {
+        display: inline-block;
+        padding: 0.5rem 1rem;
+        border-radius: 50px;
+        font-weight: 600;
+        font-size: 0.85rem;
+        transition: all 0.3s;
+        border: 2px solid transparent;
+    }
+
+    .status-hadir {
+        background: rgba(16, 185, 129, 0.1);
+        color: #10b981;
+    }
+
+    .status-sakit {
+        background: rgba(245, 158, 11, 0.1);
+        color: #f59e0b;
+    }
+
+    .status-izin {
+        background: rgba(59, 130, 246, 0.1);
+        color: #3b82f6;
+    }
+
+    .status-alfa {
+        background: rgba(239, 68, 68, 0.1);
+        color: #ef4444;
+    }
+
+    .status-option input[type="radio"]:checked + .status-label {
+        border-color: currentColor;
+        transform: scale(1.05);
+        box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    }
+
+    .status-option input[type="radio"]:checked + .status-hadir {
+        background: #10b981;
+        color: white;
+    }
+
+    .status-option input[type="radio"]:checked + .status-sakit {
+        background: #f59e0b;
+        color: white;
+    }
+
+    .status-option input[type="radio"]:checked + .status-izin {
+        background: #3b82f6;
+        color: white;
+    }
+
+    .status-option input[type="radio"]:checked + .status-alfa {
+        background: #ef4444;
+        color: white;
+    }
+</style>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    function resetForm() {
+        if (confirm('Yakin ingin mereset semua status?')) {
+            document.querySelectorAll('input[type="radio"]').forEach(radio => {
+                radio.checked = false;
+            });
+            document.querySelectorAll('input[type="text"]').forEach(input => {
+                input.value = '';
+            });
+        }
+    }
+
+    // Auto submit warning
+    document.getElementById('formAbsensi').addEventListener('submit', function(e) {
+        let radios = document.querySelectorAll('input[type="radio"]:checked');
+        if (radios.length === 0) {
+            e.preventDefault();
+            alert('Pilih minimal satu status absensi!');
+        }
+    });
+</script>
+{% endblock %}

@@ -1,0 +1,200 @@
+{% extends "admin/base_admin.html" %}
+
+{% block title %}Dashboard - SiswaHadir{% endblock %}
+
+{% block content %}
+<!-- Statistics Cards -->
+<div class="row g-4 mb-4">
+    <div class="col-xl-3 col-md-6" data-aos="fade-up" data-aos-delay="100">
+        <div class="content-card h-100">
+            <div class="d-flex align-items-center gap-3 mb-3">
+                <div class="stat-icon" style="background: rgba(110, 140, 251, 0.15); color: var(--primary); padding: 1rem; border-radius: 15px;">
+                    <i class="bi bi-people fs-1"></i>
+                </div>
+                <div>
+                    <div class="stat-number fs-1 fw-bold" style="color: var(--dark);">{{ total_siswa }}</div>
+                    <div class="text-muted">Total Siswa</div>
+                </div>
+            </div>
+            <div class="progress" style="height: 6px;">
+                <div class="progress-bar bg-primary" style="width: 100%"></div>
+            </div>
+            <small class="text-muted mt-2 d-block">
+                <i class="bi bi-check-circle-fill text-success"></i> Terdaftar semua
+            </small>
+        </div>
+    </div>
+
+    <div class="col-xl-3 col-md-6" data-aos="fade-up" data-aos-delay="200">
+        <div class="content-card h-100">
+            <div class="d-flex align-items-center gap-3 mb-3">
+                <div class="stat-icon" style="background: rgba(99, 108, 203, 0.15); color: var(--secondary); padding: 1rem; border-radius: 15px;">
+                    <i class="bi bi-door-open fs-1"></i>
+                </div>
+                <div>
+                    <div class="stat-number fs-1 fw-bold" style="color: var(--dark);">{{ total_kelas }}</div>
+                    <div class="text-muted">Total Kelas</div>
+                </div>
+            </div>
+            <div class="progress" style="height: 6px;">
+                <div class="progress-bar" style="background: var(--secondary); width: 100%"></div>
+            </div>
+            <small class="text-muted mt-2 d-block">
+                <i class="bi bi-building"></i> Kelas aktif
+            </small>
+        </div>
+    </div>
+
+    <div class="col-xl-3 col-md-6" data-aos="fade-up" data-aos-delay="300">
+        <div class="content-card h-100">
+            <div class="d-flex align-items-center gap-3 mb-3">
+                <div class="stat-icon" style="background: rgba(16, 185, 129, 0.15); color: #10b981; padding: 1rem; border-radius: 15px;">
+                    <i class="bi bi-check-circle fs-1"></i>
+                </div>
+                <div>
+                    <div class="stat-number fs-1 fw-bold" style="color: var(--dark);">{{ hadir }}</div>
+                    <div class="text-muted">Hadir Hari Ini</div>
+                </div>
+            </div>
+            <div class="progress" style="height: 6px;">
+                <div class="progress-bar bg-success" style="width: {{ (hadir/total_siswa*100) if total_siswa > 0 else 0 }}%"></div>
+            </div>
+            <small class="text-muted mt-2 d-block">
+                <i class="bi bi-arrow-up text-success"></i> {{ (hadir/total_siswa*100)|round|int if total_siswa > 0 else 0 }}% kehadiran
+            </small>
+        </div>
+    </div>
+
+    <div class="col-xl-3 col-md-6" data-aos="fade-up" data-aos-delay="400">
+        <div class="content-card h-100">
+            <div class="d-flex align-items-center gap-3 mb-3">
+                <div class="stat-icon" style="background: rgba(239, 68, 68, 0.15); color: #ef4444; padding: 1rem; border-radius: 15px;">
+                    <i class="bi bi-x-circle fs-1"></i>
+                </div>
+                <div>
+                    <div class="stat-number fs-1 fw-bold" style="color: var(--dark);">{{ sakit + izin + alfa }}</div>
+                    <div class="text-muted">Tidak Hadir</div>
+                </div>
+            </div>
+            <div class="d-flex justify-content-between mt-2">
+                <span class="badge-modern badge-sakit"><i class="bi bi-thermometer"></i> S:{{ sakit }}</span>
+                <span class="badge-modern badge-izin"><i class="bi bi-envelope"></i> I:{{ izin }}</span>
+                <span class="badge-modern badge-alfa"><i class="bi bi-x-circle"></i> A:{{ alfa }}</span>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Quick Actions -->
+<div class="content-card" data-aos="fade-up">
+    <div class="card-header">
+        <h5 class="card-title">
+            <i class="bi bi-lightning-charge"></i>
+            Quick Actions
+        </h5>
+    </div>
+    <div class="row g-3">
+        <div class="col-md-3">
+            <a href="{{ url_for('admin_siswa') }}" class="text-decoration-none">
+                <div class="p-4 text-center rounded-4" style="background: rgba(110, 140, 251, 0.05); transition: all 0.3s;">
+                    <i class="bi bi-person-plus fs-1" style="color: var(--primary);"></i>
+                    <h6 class="mt-2 fw-bold" style="color: var(--dark);">Tambah Siswa</h6>
+                    <small class="text-muted">Input data siswa baru</small>
+                </div>
+            </a>
+        </div>
+        <div class="col-md-3">
+            <a href="{{ url_for('admin_absensi') }}" class="text-decoration-none">
+                <div class="p-4 text-center rounded-4" style="background: rgba(99, 108, 203, 0.05); transition: all 0.3s;">
+                    <i class="bi bi-pencil-square fs-1" style="color: var(--secondary);"></i>
+                    <h6 class="mt-2 fw-bold" style="color: var(--dark);">Input Absensi</h6>
+                    <small class="text-muted">Absen siswa hari ini</small>
+                </div>
+            </a>
+        </div>
+        <div class="col-md-3">
+            <a href="{{ url_for('admin_laporan') }}" class="text-decoration-none">
+                <div class="p-4 text-center rounded-4" style="background: rgba(80, 88, 156, 0.05); transition: all 0.3s;">
+                    <i class="bi bi-file-text fs-1" style="color: var(--tertiary);"></i>
+                    <h6 class="mt-2 fw-bold" style="color: var(--dark);">Lihat Laporan</h6>
+                    <small class="text-muted">Rekap absensi bulanan</small>
+                </div>
+            </a>
+        </div>
+        <div class="col-md-3">
+            <a href="#" onclick="window.print()" class="text-decoration-none">
+                <div class="p-4 text-center rounded-4" style="background: rgba(60, 70, 123, 0.05); transition: all 0.3s;">
+                    <i class="bi bi-printer fs-1" style="color: var(--dark);"></i>
+                    <h6 class="mt-2 fw-bold" style="color: var(--dark);">Cetak</h6>
+                    <small class="text-muted">Cetak laporan hari ini</small>
+                </div>
+            </a>
+        </div>
+    </div>
+</div>
+
+<!-- Statistik Detail -->
+<div class="row">
+    <div class="col-md-6" data-aos="fade-right">
+        <div class="content-card">
+            <div class="card-header">
+                <h5 class="card-title">
+                    <i class="bi bi-pie-chart"></i>
+                    Rekap Hari Ini
+                </h5>
+            </div>
+            <div class="row text-center">
+                <div class="col-3">
+                    <div class="p-3">
+                        <div class="display-6 text-success">{{ hadir }}</div>
+                        <small class="text-muted">Hadir</small>
+                    </div>
+                </div>
+                <div class="col-3">
+                    <div class="p-3">
+                        <div class="display-6 text-warning">{{ sakit }}</div>
+                        <small class="text-muted">Sakit</small>
+                    </div>
+                </div>
+                <div class="col-3">
+                    <div class="p-3">
+                        <div class="display-6 text-info">{{ izin }}</div>
+                        <small class="text-muted">Izin</small>
+                    </div>
+                </div>
+                <div class="col-3">
+                    <div class="p-3">
+                        <div class="display-6 text-danger">{{ alfa }}</div>
+                        <small class="text-muted">Alfa</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-6" data-aos="fade-left">
+        <div class="content-card">
+            <div class="card-header">
+                <h5 class="card-title">
+                    <i class="bi bi-info-circle"></i>
+                    Informasi
+                </h5>
+            </div>
+            <div class="list-group list-group-flush">
+                <div class="list-group-item d-flex justify-content-between align-items-center border-0">
+                    <span><i class="bi bi-check-circle-fill text-success me-2"></i> Target Kehadiran</span>
+                    <span class="fw-bold">85%</span>
+                </div>
+                <div class="list-group-item d-flex justify-content-between align-items-center border-0">
+                    <span><i class="bi bi-calendar-check me-2" style="color: var(--primary);"></i> Hari Efektif</span>
+                    <span class="fw-bold">22 Hari</span>
+                </div>
+                <div class="list-group-item d-flex justify-content-between align-items-center border-0">
+                    <span><i class="bi bi-people me-2" style="color: var(--secondary);"></i> Rata-rata Hadir/Hari</span>
+                    <span class="fw-bold">{{ (hadir/total_siswa*100)|round|int if total_siswa > 0 else 0 }}%</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

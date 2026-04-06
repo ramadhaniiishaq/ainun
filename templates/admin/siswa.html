@@ -1,0 +1,293 @@
+{% extends "admin/base_admin.html" %}
+
+{% block title %}Data Siswa - SiswaHadir{% endblock %}
+
+{% block page_title %}Manajemen Data Siswa{% endblock %}
+
+{% block content %}
+<!-- Header Actions -->
+<div class="d-flex justify-content-end mb-4" data-aos="fade-down">
+    <button class="btn-modern-primary" data-bs-toggle="modal" data-bs-target="#modalTambah">
+        <i class="bi bi-plus-circle"></i>
+        Tambah Siswa Baru
+    </button>
+</div>
+
+<!-- Tabel Siswa -->
+<div class="content-card" data-aos="fade-up">
+    <div class="card-header">
+        <h5 class="card-title">
+            <i class="bi bi-people"></i>
+            Daftar Siswa
+        </h5>
+        <div class="d-flex gap-2">
+            <input type="text" class="form-control-modern" id="searchInput" placeholder="Cari siswa..." style="width: 250px;">
+            <select class="form-select-modern" id="kelasFilter">
+                <option value="">Semua Kelas</option>
+                {% for k in kelas %}
+                <option value="{{ k.nama_kelas }}">{{ k.nama_kelas }}</option>
+                {% endfor %}
+            </select>
+        </div>
+    </div>
+
+    <div class="table-responsive">
+        <table class="table-modern" id="siswaTable">
+            <thead>
+                <tr>
+                    <th>No</th>
+                    <th>NIS</th>
+                    <th>Nama Lengkap</th>
+                    <th>Kelas</th>
+                    <th>Status Login</th>
+                    <th>Aksi</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for s in siswa %}
+                <tr>
+                    <td>{{ loop.index }}</td>
+                    <td>
+                        <span class="fw-bold" style="color: var(--primary);">{{ s.nis }}</span>
+                    </td>
+                    <td>
+                        <div class="d-flex align-items-center gap-2">
+                            <div class="user-avatar" style="width: 35px; height: 35px; font-size: 0.9rem;">
+                                {{ s.nama[0] }}
+                            </div>
+                            <span>{{ s.nama }}</span>
+                        </div>
+                    </td>
+                    <td>
+                        {% if s.nama_kelas %}
+                            <span class="badge-modern" style="background: rgba(110, 140, 251, 0.15); color: var(--primary);">
+                                <i class="bi bi-door-open"></i> {{ s.nama_kelas }}
+                            </span>
+                        {% else %}
+                            <span class="badge-modern" style="background: #e2e8f0; color: #64748b;">
+                                <i class="bi bi-dash"></i> Belum ada kelas
+                            </span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if s.nis %}
+                            <span class="badge-modern badge-hadir">
+                                <i class="bi bi-check-circle"></i> Aktif
+                            </span>
+                        {% else %}
+                            <span class="badge-modern badge-alfa">
+                                <i class="bi bi-x-circle"></i> Tidak Aktif
+                            </span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        <div class="d-flex gap-2">
+                            <button class="btn-modern-success btn-sm" onclick="editSiswa({{ s.id_siswa }}, '{{ s.nis }}', '{{ s.nama }}', '{{ s.id_kelas }}')">
+                                <i class="bi bi-pencil"></i>
+                            </button>
+                            <a href="{{ url_for('hapus_siswa', id=s.id_siswa) }}" 
+                               class="btn-modern-danger btn-sm"
+                               onclick="return confirm('Yakin ingin menghapus siswa {{ s.nama }}?')">
+                                <i class="bi bi-trash"></i>
+                            </a>
+                        </div>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Pagination -->
+    <div class="d-flex justify-content-between align-items-center mt-4">
+        <small class="text-muted">Menampilkan {{ siswa|length }} siswa</small>
+        <nav>
+            <ul class="pagination pagination-modern">
+                <li class="page-item"><a class="page-link" href="#"><i class="bi bi-chevron-left"></i></a></li>
+                <li class="page-item active"><a class="page-link" href="#">1</a></li>
+                <li class="page-item"><a class="page-link" href="#">2</a></li>
+                <li class="page-item"><a class="page-link" href="#">3</a></li>
+                <li class="page-item"><a class="page-link" href="#"><i class="bi bi-chevron-right"></i></a></li>
+            </ul>
+        </nav>
+    </div>
+</div>
+
+<!-- Modal Tambah Siswa -->
+<div class="modal fade" id="modalTambah" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">
+                    <i class="bi bi-person-plus me-2"></i>
+                    Tambah Siswa Baru
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <form action="{{ url_for('tambah_siswa') }}" method="POST">
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">NIS <span class="text-danger">*</span></label>
+                        <input type="text" name="nis" class="form-control-modern w-100" placeholder="Masukkan NIS" required>
+                        <small class="text-muted">NIS akan digunakan sebagai username login siswa</small>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">Nama Lengkap <span class="text-danger">*</span></label>
+                        <input type="text" name="nama" class="form-control-modern w-100" placeholder="Masukkan nama lengkap" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">password <span class="text-danger">*</span></label>
+                        <input type="text" name="password" class="form-control-modern w-100" placeholder="Masukkan nama lengkap" required>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">Kelas</label>
+                        <select name="id_kelas" class="form-select-modern w-100">
+                            <option value="">-- Pilih Kelas --</option>
+                            {% for k in kelas %}
+                            <option value="{{ k.id_kelas }}">{{ k.nama_kelas }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    
+                    <div class="alert alert-info" style="border-radius: 15px;">
+                        <i class="bi bi-info-circle"></i>
+                        Password default siswa: <strong>12345</strong>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn-modern-danger" data-bs-dismiss="modal">Batal</button>
+                    <button type="submit" class="btn-modern-primary">Simpan</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+<!-- Modal Edit Siswa (Perbaikan) -->
+<div class="modal fade" id="modalEdit" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header" style="background: var(--gradient-2);">
+                <h5 class="modal-title">
+                    <i class="bi bi-pencil me-2"></i>
+                    Edit Data Siswa
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <form action="{{ url_for('edit_siswa') }}" method="POST" id="editForm">
+                <div class="modal-body">
+                    <input type="hidden" name="id_siswa" id="editId">
+                    
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">NIS <span class="text-danger">*</span></label>
+                        <input type="text" name="nis" id="editNis" class="form-control-modern w-100" required>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">Nama Lengkap <span class="text-danger">*</span></label>
+                        <input type="text" name="nama" id="editNama" class="form-control-modern w-100" required>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">Kelas</label>
+                        <select name="id_kelas" id="editKelas" class="form-select-modern w-100">
+                            <option value="">-- Pilih Kelas --</option>
+                            {% for k in kelas %}
+                            <option value="{{ k.id_kelas }}">{{ k.nama_kelas }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn-modern-danger" data-bs-dismiss="modal">Batal</button>
+                    <button type="submit" class="btn-modern-primary">Update</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<style>
+    .pagination-modern .page-link {
+        border: none;
+        border-radius: 12px;
+        margin: 0 3px;
+        color: var(--dark);
+        font-weight: 600;
+        transition: all 0.3s;
+    }
+
+    .pagination-modern .page-link:hover {
+        background: var(--primary);
+        color: white;
+    }
+
+    .pagination-modern .active .page-link {
+        background: var(--gradient-1);
+        color: white;
+    }
+</style>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // Search functionality
+    document.getElementById('searchInput').addEventListener('keyup', function() {
+        let searchText = this.value.toLowerCase();
+        let tableRows = document.querySelectorAll('#siswaTable tbody tr');
+        
+        tableRows.forEach(row => {
+            let nis = row.cells[1].textContent.toLowerCase();
+            let nama = row.cells[2].textContent.toLowerCase();
+            if (nis.includes(searchText) || nama.includes(searchText)) {
+                row.style.display = '';
+            } else {
+                row.style.display = 'none';
+            }
+        });
+    });
+
+    // Filter by class
+    document.getElementById('kelasFilter').addEventListener('change', function() {
+        let filterValue = this.value;
+        let tableRows = document.querySelectorAll('#siswaTable tbody tr');
+        
+        tableRows.forEach(row => {
+            let kelas = row.cells[3].textContent.trim();
+            if (filterValue === '' || kelas.includes(filterValue)) {
+                row.style.display = '';
+            } else {
+                row.style.display = 'none';
+            }
+        });
+    });
+
+    // Edit function (Perbaikan)
+    function editSiswa(id, nis, nama, idKelas) {
+        // Set nilai ke form
+        document.getElementById('editId').value = id;
+        document.getElementById('editNis').value = nis;
+        document.getElementById('editNama').value = nama;
+        document.getElementById('editKelas').value = idKelas;
+        
+        // Show modal
+        let modal = new bootstrap.Modal(document.getElementById('modalEdit'));
+        modal.show();
+    }
+
+    // Edit Password function (Perbaikan)
+    function editPassword(id) {
+        // Set id siswa ke hidden input
+        document.getElementById('passwordId').value = id;
+        
+        // Reset form
+        document.getElementById('passwordBaru').value = '';
+        
+        // Show modal
+        let modal = new bootstrap.Modal(document.getElementById('editpassword'));
+        modal.show();
+    }
+
+</script>
+{% endblock %}

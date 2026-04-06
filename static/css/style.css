@@ -1,0 +1,569 @@
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #6E8CFB;
+            --primary-light: #8BA3FC;
+            --secondary: #636CCB;
+            --tertiary: #50589C;
+            --dark: #3C467B;
+            --dark-deep: #2A3159;
+            --bg-light: #F5F7FD;
+            --card-bg: rgba(255, 255, 255, 0.9);
+            --glass-effect: rgba(255, 255, 255, 0.25);
+            --shadow-sm: 0 8px 30px rgba(60, 70, 123, 0.08);
+            --shadow-md: 0 15px 40px rgba(60, 70, 123, 0.12);
+            --shadow-lg: 0 30px 60px rgba(60, 70, 123, 0.15);
+            --gradient-1: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            --gradient-2: linear-gradient(135deg, var(--secondary) 0%, var(--tertiary) 100%);
+            --gradient-3: linear-gradient(135deg, var(--tertiary) 0%, var(--dark) 100%);
+            --gradient-4: linear-gradient(135deg, var(--dark) 0%, var(--dark-deep) 100%);
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --info: #3b82f6;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--bg-light);
+            color: #1e293b;
+            overflow-x: hidden;
+        }
+
+        h1, h2, h3, h4, h5, h6 {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            font-weight: 700;
+        }
+
+        /* Glassmorphism Effects */
+        .glass-card {
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.5);
+            border-radius: 32px;
+        }
+
+        .glass-nav {
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.5);
+        }
+
+        /* Modern Navbar */
+        .navbar-modern {
+            padding: 1rem 0;
+            transition: all 0.3s ease;
+        }
+
+        .navbar-modern .navbar-brand {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            font-weight: 800;
+            font-size: 1.75rem;
+            background: var(--gradient-1);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            letter-spacing: -0.5px;
+        }
+
+        .navbar-modern .nav-link {
+            font-weight: 600;
+            color: var(--dark);
+            padding: 0.5rem 1.2rem !important;
+            border-radius: 50px;
+            transition: all 0.3s;
+            position: relative;
+        }
+
+        .navbar-modern .nav-link:hover,
+        .navbar-modern .nav-link.active {
+            background: var(--gradient-1);
+            color: white !important;
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-sm);
+        }
+
+        /* Profile Section */
+        .profile-section {
+            background: white;
+            border-radius: 40px;
+            padding: 2rem;
+            box-shadow: var(--shadow-md);
+            border: 1px solid rgba(255, 255, 255, 0.5);
+            backdrop-filter: blur(10px);
+            margin-bottom: 2rem;
+        }
+
+        .profile-avatar-large {
+            width: 120px;
+            height: 120px;
+            border-radius: 40px;
+            background: var(--gradient-1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 800;
+            font-size: 3rem;
+            box-shadow: 0 20px 40px rgba(110, 140, 251, 0.3);
+            border: 4px solid white;
+        }
+
+        .profile-badge {
+            background: rgba(110, 140, 251, 0.1);
+            padding: 0.5rem 1.2rem;
+            border-radius: 50px;
+            font-weight: 600;
+            color: var(--dark);
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            border: 1px solid rgba(110, 140, 251, 0.3);
+        }
+
+        /* Modern Stats Cards */
+        .stat-card-modern {
+            background: white;
+            border-radius: 30px;
+            padding: 1.8rem;
+            box-shadow: var(--shadow-sm);
+            transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+            position: relative;
+            overflow: hidden;
+            border: 1px solid rgba(255, 255, 255, 0.5);
+            backdrop-filter: blur(10px);
+            height: 100%;
+        }
+
+        .stat-card-modern::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(135deg, rgba(110, 140, 251, 0.1), rgba(60, 70, 123, 0.1));
+            opacity: 0;
+            transition: opacity 0.4s;
+        }
+
+        .stat-card-modern:hover {
+            transform: translateY(-10px) scale(1.02);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .stat-card-modern:hover::before {
+            opacity: 1;
+        }
+
+        .stat-icon-modern {
+            width: 60px;
+            height: 60px;
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            margin-bottom: 1.5rem;
+            background: var(--gradient-1);
+            color: white;
+            box-shadow: 0 10px 20px rgba(110, 140, 251, 0.3);
+        }
+
+        .stat-number-modern {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            font-size: 2.8rem;
+            font-weight: 800;
+            line-height: 1;
+            margin-bottom: 0.5rem;
+            background: var(--gradient-1);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .stat-label-modern {
+            color: #64748b;
+            font-weight: 600;
+            font-size: 0.95rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        /* Progress Bar */
+        .progress-modern {
+            height: 8px;
+            background: #e2e8f0;
+            border-radius: 50px;
+            margin-top: 1rem;
+            overflow: hidden;
+        }
+
+        .progress-bar-modern {
+            background: var(--gradient-1);
+            border-radius: 50px;
+            position: relative;
+            animation: progressAnimation 2s ease-out forwards;
+        }
+
+        @keyframes progressAnimation {
+            from { width: 0; }
+            to { width: var(--progress); }
+        }
+
+        /* Attendance Calendar */
+        .calendar-card {
+            background: white;
+            border-radius: 30px;
+            padding: 1.8rem;
+            box-shadow: var(--shadow-md);
+            border: 1px solid rgba(255, 255, 255, 0.5);
+        }
+
+        .calendar-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .calendar-title {
+            font-weight: 700;
+            color: var(--dark);
+        }
+
+        .calendar-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 0.5rem;
+        }
+
+        .calendar-weekday {
+            text-align: center;
+            font-weight: 600;
+            color: var(--dark);
+            font-size: 0.85rem;
+            padding: 0.5rem;
+        }
+
+        .calendar-day {
+            aspect-ratio: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            border-radius: 15px;
+            transition: all 0.3s;
+            cursor: pointer;
+            font-size: 0.9rem;
+        }
+
+        .calendar-day:hover {
+            background: rgba(110, 140, 251, 0.1);
+            transform: scale(1.05);
+        }
+
+        .calendar-day.today {
+            background: var(--gradient-1);
+            color: white;
+            box-shadow: 0 5px 15px rgba(110, 140, 251, 0.3);
+        }
+
+        .calendar-day.hadir {
+            background: rgba(16, 185, 129, 0.15);
+            color: var(--success);
+            border: 1px solid var(--success);
+        }
+
+        .calendar-day.sakit {
+            background: rgba(245, 158, 11, 0.15);
+            color: var(--warning);
+            border: 1px solid var(--warning);
+        }
+
+        .calendar-day.izin {
+            background: rgba(59, 130, 246, 0.15);
+            color: var(--info);
+            border: 1px solid var(--info);
+        }
+
+        .calendar-day.alpha {
+            background: rgba(239, 68, 68, 0.15);
+            color: var(--danger);
+            border: 1px solid var(--danger);
+        }
+
+        /* Attendance List */
+        .attendance-list-card {
+            background: white;
+            border-radius: 30px;
+            padding: 1.8rem;
+            box-shadow: var(--shadow-md);
+            border: 1px solid rgba(255, 255, 255, 0.5);
+        }
+
+        .attendance-item {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 1rem;
+            border-radius: 20px;
+            transition: all 0.3s;
+            border: 1px solid transparent;
+        }
+
+        .attendance-item:hover {
+            background: rgba(110, 140, 251, 0.05);
+            border-color: rgba(110, 140, 251, 0.2);
+            transform: translateX(5px);
+        }
+
+        .attendance-date {
+            min-width: 60px;
+            text-align: center;
+        }
+
+        .attendance-day {
+            font-size: 1.5rem;
+            font-weight: 800;
+            color: var(--dark);
+            line-height: 1;
+        }
+
+        .attendance-month {
+            font-size: 0.7rem;
+            color: #64748b;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .attendance-info {
+            flex: 1;
+        }
+
+        .attendance-subject {
+            font-weight: 700;
+            color: var(--dark);
+            margin-bottom: 0.2rem;
+        }
+
+        .attendance-time {
+            font-size: 0.85rem;
+            color: #64748b;
+            display: flex;
+            align-items: center;
+            gap: 0.3rem;
+        }
+
+        .attendance-status {
+            padding: 0.5rem 1rem;
+            border-radius: 50px;
+            font-weight: 700;
+            font-size: 0.8rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.3rem;
+        }
+
+        .status-hadir {
+            background: rgba(16, 185, 129, 0.15);
+            color: var(--success);
+        }
+
+        .status-sakit {
+            background: rgba(245, 158, 11, 0.15);
+            color: var(--warning);
+        }
+
+        .status-izin {
+            background: rgba(59, 130, 246, 0.15);
+            color: var(--info);
+        }
+
+        .status-alpha {
+            background: rgba(239, 68, 68, 0.15);
+            color: var(--danger);
+        }
+
+        /* Subject Cards */
+        .subject-card {
+            background: white;
+            border-radius: 25px;
+            padding: 1.5rem;
+            box-shadow: var(--shadow-sm);
+            transition: all 0.3s;
+            border: 1px solid rgba(255, 255, 255, 0.5);
+            height: 100%;
+        }
+
+        .subject-card:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-md);
+            border-color: var(--primary);
+        }
+
+        .subject-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 15px;
+            background: var(--gradient-1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .subject-name {
+            font-weight: 700;
+            color: var(--dark);
+            margin-bottom: 0.3rem;
+        }
+
+        .subject-teacher {
+            font-size: 0.85rem;
+            color: #64748b;
+            margin-bottom: 1rem;
+        }
+
+        .subject-progress {
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--dark);
+        }
+
+        /* Badge Modern */
+        .badge-modern {
+            padding: 0.5rem 1rem;
+            border-radius: 50px;
+            font-weight: 600;
+            font-size: 0.85rem;
+            letter-spacing: 0.3px;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        /* Button Modern */
+        .btn-modern-primary {
+            background: var(--gradient-1);
+            border: none;
+            border-radius: 50px;
+            padding: 0.9rem 2rem;
+            font-weight: 700;
+            font-size: 0.95rem;
+            color: white;
+            transition: all 0.3s;
+            box-shadow: 0 10px 20px rgba(110, 140, 251, 0.3);
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn-modern-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 30px rgba(110, 140, 251, 0.4);
+            color: white;
+        }
+
+        .btn-modern-outline {
+            background: transparent;
+            border: 2px solid var(--primary);
+            border-radius: 50px;
+            padding: 0.9rem 2rem;
+            font-weight: 700;
+            font-size: 0.95rem;
+            color: var(--primary);
+            transition: all 0.3s;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn-modern-outline:hover {
+            background: var(--gradient-1);
+            border-color: transparent;
+            color: white;
+            transform: translateY(-3px);
+            box-shadow: 0 15px 30px rgba(110, 140, 251, 0.3);
+        }
+
+        /* Quick Action */
+        .quick-action {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            z-index: 999;
+        }
+
+        .quick-action-btn {
+            width: 60px;
+            height: 60px;
+            border-radius: 30px;
+            background: var(--gradient-1);
+            border: none;
+            color: white;
+            font-size: 1.5rem;
+            box-shadow: var(--shadow-lg);
+            transition: all 0.3s;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .quick-action-btn:hover {
+            transform: scale(1.1) rotate(90deg);
+            box-shadow: 0 20px 40px rgba(110, 140, 251, 0.4);
+        }
+
+        /* Footer Modern */
+        .footer-modern {
+            background: white;
+            padding: 2rem 0;
+            margin-top: 4rem;
+            box-shadow: 0 -10px 40px rgba(60, 70, 123, 0.08);
+            border-top: 1px solid rgba(110, 140, 251, 0.2);
+        }
+
+        /* Animation */
+        .fade-in-up {
+            animation: fadeInUp 0.6s ease-out;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .profile-avatar-large {
+                width: 80px;
+                height: 80px;
+                font-size: 2rem;
+            }
+            
+            .stat-number-modern {
+                font-size: 2rem;
+            }
+            
+            .calendar-grid {
+                gap: 0.2rem;
+            }
+            
+            .calendar-day {
+                font-size: 0.8rem;
+            }
+        }

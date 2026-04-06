@@ -1,0 +1,237 @@
+{% extends "admin/base_admin.html" %}
+
+{% block title %}Laporan Absensi - SiswaHadir{% endblock %}
+
+{% block page_title %}Laporan Rekapitulasi Absensi{% endblock %}
+
+{% block content %}
+<!-- Filter Card -->
+<div class="content-card" data-aos="fade-down">
+    <div class="card-header">
+        <h5 class="card-title">
+            <i class="bi bi-funnel"></i>
+            Filter Laporan
+        </h5>
+        <button onclick="window.print()" class="btn-modern-primary">
+            <i class="bi bi-printer"></i>
+            Cetak Laporan
+        </button>
+    </div>
+    <form method="GET" class="row g-3">
+        <div class="col-md-3">
+            <label class="form-label fw-semibold">Bulan</label>
+            <select name="bulan" class="form-select-modern">
+                {% for b in bulan_list %}
+                <option value="{{ b }}" {% if b == bulan %}selected{% endif %}>
+                    {{ nama_bulan(b) }}
+                </option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="col-md-3">
+            <label class="form-label fw-semibold">Tahun</label>
+            <select name="tahun" class="form-select-modern">
+                {% for t in tahun_list %}
+                <option value="{{ t }}" {% if t == tahun %}selected{% endif %}>{{ t }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="col-md-4">
+            <label class="form-label fw-semibold">Kelas</label>
+            <select name="id_kelas" class="form-select-modern">
+                <option value="">Semua Kelas</option>
+                {% for k in kelas %}
+                <option value="{{ k.id_kelas }}" {% if id_kelas == k.id_kelas|string %}selected{% endif %}>
+                    {{ k.nama_kelas }}
+                </option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="col-md-2 d-flex align-items-end">
+            <button type="submit" class="btn-modern-primary w-100">
+                <i class="bi bi-search"></i>
+                Filter
+            </button>
+        </div>
+    </form>
+</div>
+
+<!-- Summary Cards -->
+<div class="row g-4 mb-4">
+    <div class="col-md-3" data-aos="fade-up" data-aos-delay="100">
+        <div class="content-card text-center">
+            <div class="stat-icon mx-auto mb-3" style="background: rgba(110, 140, 251, 0.15); color: var(--primary); width: 60px; height: 60px; border-radius: 15px; display: flex; align-items: center; justify-content: center;">
+                <i class="bi bi-people fs-2"></i>
+            </div>
+            <h3 class="fw-bold" style="color: var(--dark);">{{ laporan|length }}</h3>
+            <small class="text-muted">Total Siswa</small>
+        </div>
+    </div>
+    <div class="col-md-3" data-aos="fade-up" data-aos-delay="200">
+        <div class="content-card text-center">
+            <div class="stat-icon mx-auto mb-3" style="background: rgba(16, 185, 129, 0.15); color: #10b981; width: 60px; height: 60px; border-radius: 15px; display: flex; align-items: center; justify-content: center;">
+                <i class="bi bi-check-circle fs-2"></i>
+            </div>
+            <h3 class="fw-bold" style="color: var(--dark);">{{ laporan|sum(attribute='hadir') }}</h3>
+            <small class="text-muted">Total Hadir</small>
+        </div>
+    </div>
+    <div class="col-md-3" data-aos="fade-up" data-aos-delay="300">
+        <div class="content-card text-center">
+            <div class="stat-icon mx-auto mb-3" style="background: rgba(245, 158, 11, 0.15); color: #f59e0b; width: 60px; height: 60px; border-radius: 15px; display: flex; align-items: center; justify-content: center;">
+                <i class="bi bi-thermometer fs-2"></i>
+            </div>
+            <h3 class="fw-bold" style="color: var(--dark);">{{ laporan|sum(attribute='sakit') }}</h3>
+            <small class="text-muted">Total Sakit</small>
+        </div>
+    </div>
+    <div class="col-md-3" data-aos="fade-up" data-aos-delay="400">
+        <div class="content-card text-center">
+            <div class="stat-icon mx-auto mb-3" style="background: rgba(239, 68, 68, 0.15); color: #ef4444; width: 60px; height: 60px; border-radius: 15px; display: flex; align-items: center; justify-content: center;">
+                <i class="bi bi-x-circle fs-2"></i>
+            </div>
+            <h3 class="fw-bold" style="color: var(--dark);">{{ laporan|sum(attribute='alfa') }}</h3>
+            <small class="text-muted">Total Alfa</small>
+        </div>
+    </div>
+</div>
+
+<!-- Tabel Laporan -->
+<div class="content-card" data-aos="fade-up">
+    <div class="card-header">
+        <h5 class="card-title">
+            <i class="bi bi-table"></i>
+            Rekapitulasi Bulan {{ nama_bulan(bulan) }} {{ tahun }}
+            {% if id_kelas %} - {{ kelas|selectattr('id_kelas', 'equalto', id_kelas|int)|map(attribute='nama_kelas')|first }}{% endif %}
+        </h5>
+    </div>
+
+    <div class="table-responsive">
+        <table class="table-modern">
+            <thead>
+                <tr>
+                    <th>No</th>
+                    <th>NIS</th>
+                    <th>Nama Siswa</th>
+                    <th>Kelas</th>
+                    <th class="text-center" style="background: rgba(16, 185, 129, 0.15); color: #10b981;">Hadir</th>
+                    <th class="text-center" style="background: rgba(245, 158, 11, 0.15); color: #f59e0b;">Sakit</th>
+                    <th class="text-center" style="background: rgba(59, 130, 246, 0.15); color: #3b82f6;">Izin</th>
+                    <th class="text-center" style="background: rgba(239, 68, 68, 0.15); color: #ef4444;">Alfa</th>
+                    <th class="text-center">Total</th>
+                    <th>% Hadir</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in laporan %}
+                <tr>
+                    <td>{{ loop.index }}</td>
+                    <td><span class="fw-bold" style="color: var(--primary);">{{ item.nis }}</span></td>
+                    <td>{{ item.nama }}</td>
+                    <td>{{ item.nama_kelas or '-' }}</td>
+                    <td class="text-center fw-bold" style="color: #10b981;">{{ item.hadir or 0 }}</td>
+                    <td class="text-center fw-bold" style="color: #f59e0b;">{{ item.sakit or 0 }}</td>
+                    <td class="text-center fw-bold" style="color: #3b82f6;">{{ item.izin or 0 }}</td>
+                    <td class="text-center fw-bold" style="color: #ef4444;">{{ item.alfa or 0 }}</td>
+                    <td class="text-center fw-bold">{{ (item.hadir or 0) + (item.sakit or 0) + (item.izin or 0) + (item.alfa or 0) }}</td>
+                    <td>
+                        {% set total_hari = (item.hadir or 0) + (item.sakit or 0) + (item.izin or 0) + (item.alfa or 0) %}
+                        {% if total_hari > 0 %}
+                            {% set persen = ((item.hadir or 0) / total_hari * 100)|round|int %}
+                            <div class="d-flex align-items-center gap-2">
+                                <div class="progress flex-grow-1" style="height: 6px;">
+                                    <div class="progress-bar bg-success" style="width: {{ persen }}%;"></div>
+                                </div>
+                                <small class="fw-bold">{{ persen }}%</small>
+                            </div>
+                        {% else %}
+                            <small class="text-muted">-</small>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% else %}
+                <tr>
+                    <td colspan="10" class="text-center py-5">
+                        <i class="bi bi-inbox" style="font-size: 3rem; color: #cbd5e1;"></i>
+                        <p class="mt-3 text-muted">Tidak ada data untuk ditampilkan</p>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- Chart Section -->
+
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    // Prepare data for chart
+    const labels = [{% for item in laporan %}'{{ item.nama }}'{% if not loop.last %}, {% endif %}{% endfor %}];
+    const hadirData = [{% for item in laporan %}{{ item.hadir or 0 }}{% if not loop.last %}, {% endif %}{% endfor %}];
+    const sakitData = [{% for item in laporan %}{{ item.sakit or 0 }}{% if not loop.last %}, {% endif %}{% endfor %}];
+    const izinData = [{% for item in laporan %}{{ item.izin or 0 }}{% if not loop.last %}, {% endif %}{% endfor %}];
+    const alfaData = [{% for item in laporan %}{{ item.alfa or 0 }}{% if not loop.last %}, {% endif %}{% endfor %}];
+
+    // Create chart
+    const ctx = document.getElementById('attendanceChart').getContext('2d');
+    new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: labels,
+            datasets: [
+                {
+                    label: 'Hadir',
+                    data: hadirData,
+                    backgroundColor: '#10b981',
+                    borderRadius: 8
+                },
+                {
+                    label: 'Sakit',
+                    data: sakitData,
+                    backgroundColor: '#f59e0b',
+                    borderRadius: 8
+                },
+                {
+                    label: 'Izin',
+                    data: izinData,
+                    backgroundColor: '#3b82f6',
+                    borderRadius: 8
+                },
+                {
+                    label: 'Alfa',
+                    data: alfaData,
+                    backgroundColor: '#ef4444',
+                    borderRadius: 8
+                }
+            ]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    position: 'top',
+                }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    grid: {
+                        display: true,
+                        color: '#e2e8f0'
+                    }
+                },
+                x: {
+                    grid: {
+                        display: false
+                    }
+                }
+            }
+        }
+    });
+</script>
+{% endblock %}

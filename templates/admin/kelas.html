@@ -1,0 +1,311 @@
+{% extends "admin/base_admin.html" %}
+
+{% block title %}Manajemen Kelas - SiswaHadir{% endblock %}
+
+{% block page_title %}Manajemen Data Kelas{% endblock %}
+
+{% block content %}
+<!-- Header Actions -->
+<div class="d-flex justify-content-end mb-4" data-aos="fade-down">
+    <button class="btn-modern-primary" data-bs-toggle="modal" data-bs-target="#modalTambahKelas">
+        <i class="bi bi-plus-circle"></i>
+        Tambah Kelas Baru
+    </button>
+</div>
+
+<!-- Statistik Kelas -->
+<div class="row g-4 mb-4">
+    <div class="col-md-4" data-aos="fade-up" data-aos-delay="100">
+        <div class="content-card h-100">
+            <div class="d-flex align-items-center gap-3">
+                <div class="stat-icon" style="background: rgba(110, 140, 251, 0.15); color: var(--primary); padding: 1rem; border-radius: 15px;">
+                    <i class="bi bi-door-open fs-1"></i>
+                </div>
+                <div>
+                    <div class="stat-number fs-1 fw-bold" style="color: var(--dark);">{{ kelas|length }}</div>
+                    <div class="text-muted">Total Kelas</div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4" data-aos="fade-up" data-aos-delay="200">
+        <div class="content-card h-100">
+            <div class="d-flex align-items-center gap-3">
+                <div class="stat-icon" style="background: rgba(16, 185, 129, 0.15); color: #10b981; padding: 1rem; border-radius: 15px;">
+                    <i class="bi bi-people fs-1"></i>
+                </div>
+                <div>
+                    <div class="stat-number fs-1 fw-bold" style="color: var(--dark);">{{ kelas|sum(attribute='jumlah_siswa') }}</div>
+                    <div class="text-muted">Total Siswa</div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4" data-aos="fade-up" data-aos-delay="300">
+        <div class="content-card h-100">
+            <div class="d-flex align-items-center gap-3">
+                <div class="stat-icon" style="background: rgba(245, 158, 11, 0.15); color: #f59e0b; padding: 1rem; border-radius: 15px;">
+                    <i class="bi bi-calculator fs-1"></i>
+                </div>
+                <div>
+                    <div class="stat-number fs-1 fw-bold" style="color: var(--dark);">{{ (kelas|sum(attribute='jumlah_siswa') / kelas|length)|round|int if kelas|length > 0 else 0 }}</div>
+                    <div class="text-muted">Rata-rata/Kelas</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Daftar Kelas -->
+<div class="content-card" data-aos="fade-up">
+    <div class="card-header">
+        <h5 class="card-title">
+            <i class="bi bi-door-open"></i>
+            Daftar Kelas
+        </h5>
+        <div class="d-flex gap-2">
+            <input type="text" class="form-control-modern" id="searchKelas" placeholder="Cari kelas..." style="width: 250px;">
+        </div>
+    </div>
+
+    <div class="table-responsive">
+        <table class="table-modern" id="kelasTable">
+            <thead>
+                <tr>
+                    <th style="width: 5%">No</th>
+                    <th style="width: 40%">Nama Kelas</th>
+                    <th style="width: 20%">Jumlah Siswa</th>
+                    <th style="width: 20%">Status</th>
+                    <th style="width: 15%">Aksi</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for k in kelas %}
+                <tr>
+                    <td>{{ loop.index }}</td>
+                    <td>
+                        <div class="d-flex align-items-center gap-2">
+                            <div class="user-avatar" style="width: 35px; height: 35px; background: var(--gradient-2);">
+                                {{ k.nama_kelas[0] }}
+                            </div>
+                            <span class="fw-bold" style="color: var(--dark);">{{ k.nama_kelas }}</span>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="d-flex align-items-center gap-2">
+                            <span class="fw-bold" style="color: var(--primary);">{{ k.jumlah_siswa }}</span>
+                            <span class="text-muted">siswa</span>
+                        </div>
+                    </td>
+                    <td>
+                        {% if k.jumlah_siswa > 0 %}
+                            <span class="badge-modern badge-hadir">
+                                <i class="bi bi-check-circle"></i> Aktif
+                            </span>
+                        {% else %}
+                            <span class="badge-modern" style="background: #e2e8f0; color: #64748b;">
+                                <i class="bi bi-dash-circle"></i> Kosong
+                            </span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        <div class="d-flex gap-2">
+                            <button class="btn-modern-success btn-sm" onclick="editKelas({{ k.id_kelas }}, '{{ k.nama_kelas }}')">
+                                <i class="bi bi-pencil"></i>
+                            </button>
+                            <button class="btn-modern-danger btn-sm" onclick="hapusKelas({{ k.id_kelas }}, '{{ k.nama_kelas }}', {{ k.jumlah_siswa }})">
+                                <i class="bi bi-trash"></i>
+                            </button>
+                        </div>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Info Footer -->
+    <div class="d-flex justify-content-between align-items-center mt-4">
+        <small class="text-muted">
+            <i class="bi bi-info-circle me-1" style="color: var(--primary);"></i>
+            Total {{ kelas|length }} kelas dengan {{ kelas|sum(attribute='jumlah_siswa') }} siswa
+        </small>
+    </div>
+</div>
+
+<!-- Modal Tambah Kelas -->
+<div class="modal fade" id="modalTambahKelas" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">
+                    <i class="bi bi-plus-circle me-2"></i>
+                    Tambah Kelas Baru
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <form action="{{ url_for('admin_tambah_kelas') }}" method="POST">
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">Nama Kelas <span class="text-danger">*</span></label>
+                        <div class="input-wrapper">
+                            <i class="bi bi-door-open" style="position: absolute; left: 1rem; top: 50%; transform: translateY(-50%); color: var(--primary);"></i>
+                            <input type="text" name="nama_kelas" class="form-control-modern" style="padding-left: 3rem;" placeholder="Contoh: X RPL, XI AKL, XII TKJ" required>
+                        </div>
+                        <small class="text-muted">Masukkan nama kelas dengan format yang jelas</small>
+                    </div>
+
+                    <div class="alert alert-info" style="border-radius: 15px;">
+                        <i class="bi bi-info-circle me-2"></i>
+                        Kelas yang ditambahkan akan tersedia untuk dipilih saat menambah siswa.
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn-modern-danger" data-bs-dismiss="modal">Batal</button>
+                    <button type="submit" class="btn-modern-primary">Simpan</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Edit Kelas -->
+<div class="modal fade" id="modalEditKelas" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header" style="background: var(--gradient-2);">
+                <h5 class="modal-title">
+                    <i class="bi bi-pencil me-2"></i>
+                    Edit Kelas
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <form action="" method="POST" id="formEditKelas">
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">Nama Kelas <span class="text-danger">*</span></label>
+                        <div class="input-wrapper">
+                            <i class="bi bi-door-open" style="position: absolute; left: 1rem; top: 50%; transform: translateY(-50%); color: var(--secondary);"></i>
+                            <input type="text" name="nama_kelas" id="editNamaKelas" class="form-control-modern" style="padding-left: 3rem;" required>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn-modern-danger" data-bs-dismiss="modal">Batal</button>
+                    <button type="submit" class="btn-modern-primary">Update</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Hapus Kelas -->
+<div class="modal fade" id="modalHapusKelas" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header" style="background: #ef4444;">
+                <h5 class="modal-title">
+                    <i class="bi bi-exclamation-triangle me-2"></i>
+                    Konfirmasi Hapus
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body text-center py-4">
+                <i class="bi bi-exclamation-octagon" style="font-size: 4rem; color: #ef4444;"></i>
+                <h5 class="mt-3 fw-bold" id="hapusKelasNama"></h5>
+                <p class="text-muted mt-2" id="hapusKelasInfo"></p>
+                <div class="alert alert-warning mt-3" id="hapusKelasWarning" style="display: none;">
+                    <i class="bi bi-exclamation-triangle"></i>
+                    Kelas ini memiliki siswa, tidak dapat dihapus!
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn-modern-secondary" data-bs-dismiss="modal">Batal</button>
+                <a href="" id="hapusKelasLink" class="btn-modern-danger">Hapus Permanen</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .btn-modern-secondary {
+        background: #e2e8f0;
+        border: none;
+        border-radius: 15px;
+        padding: 0.7rem 1.5rem;
+        color: #475569;
+        font-weight: 600;
+        transition: all 0.3s;
+        text-decoration: none;
+        display: inline-block;
+    }
+    
+    .btn-modern-secondary:hover {
+        background: #cbd5e1;
+        color: #1e293b;
+        transform: translateY(-2px);
+    }
+
+    .table-modern td {
+        vertical-align: middle;
+    }
+</style>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // Search functionality
+    document.getElementById('searchKelas').addEventListener('keyup', function() {
+        let searchText = this.value.toLowerCase();
+        let tableRows = document.querySelectorAll('#kelasTable tbody tr');
+        
+        tableRows.forEach(row => {
+            let namaKelas = row.cells[1].textContent.toLowerCase();
+            if (namaKelas.includes(searchText)) {
+                row.style.display = '';
+            } else {
+                row.style.display = 'none';
+            }
+        });
+    });
+
+    // Edit function
+    function editKelas(id, nama) {
+        document.getElementById('editNamaKelas').value = nama;
+        document.getElementById('formEditKelas').action = "{{ url_for('admin_edit_kelas', id_kelas=0) }}".replace('0', id);
+        
+        let modal = new bootstrap.Modal(document.getElementById('modalEditKelas'));
+        modal.show();
+    }
+
+    // Hapus function
+    function hapusKelas(id, nama, jumlahSiswa) {
+        document.getElementById('hapusKelasNama').textContent = nama;
+        
+        if (jumlahSiswa > 0) {
+            document.getElementById('hapusKelasInfo').textContent = `Kelas ini memiliki ${jumlahSiswa} siswa.`;
+            document.getElementById('hapusKelasWarning').style.display = 'block';
+            document.getElementById('hapusKelasLink').style.display = 'none';
+        } else {
+            document.getElementById('hapusKelasInfo').textContent = 'Apakah Anda yakin ingin menghapus kelas ini?';
+            document.getElementById('hapusKelasWarning').style.display = 'none';
+            document.getElementById('hapusKelasLink').style.display = 'inline-block';
+            document.getElementById('hapusKelasLink').href = "{{ url_for('admin_hapus_kelas', id_kelas=0) }}".replace('0', id);
+        }
+        
+        let modal = new bootstrap.Modal(document.getElementById('modalHapusKelas'));
+        modal.show();
+    }
+
+    // Auto close alerts
+    setTimeout(function() {
+        let alerts = document.querySelectorAll('.alert');
+        alerts.forEach(alert => {
+            let bsAlert = new bootstrap.Alert(alert);
+            setTimeout(() => {
+                bsAlert.close();
+            }, 5000);
+        });
+    }, 100);
+</script>
+{% endblock %}
